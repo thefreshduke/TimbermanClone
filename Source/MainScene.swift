@@ -8,14 +8,14 @@ class MainScene : CCNode {
     var _timerBar : CCSprite!
     var _view : CCGLView!
     
-    // initial states
-    var _isBranchAllowed : Bool = false
+    // initial state variables
     var _isBranchLeft : Bool = false
     var _isCharacterLeft : Bool = true
     var _score : NSInteger = 0
     var _timer : Float = 5.0
     
     // magic numbers
+    var scoreStart : Int = 0
     var timerBonus : Float = 0.25
     var timerStart : Float = 5.0
     var timerMax : Float = 10.0
@@ -33,59 +33,62 @@ class MainScene : CCNode {
     
     // set starting conditions
     func prepareNewGame () {
-        _isBranchAllowed = false
+        
+        // clean old tree
+        _base.removeAllChildren()
+        
+        // set initial values
         _isBranchLeft = false
         _isCharacterLeft = true
         _character.position.x = 0.0
         _character.flipX = false
-        _restartButton.visible = false
-        _score = 0
+        _restartButton.visible = true
+        _score = scoreStart
         _scoreLabel.position.x = widthMidpoint
         _timer = timerStart
         _timerBar.position.x = widthMidpoint
         _timerBar.scaleX = timerStart / timerMax
         self.userInteractionEnabled = true
+        
+        // build new tree
         buildTree(_base.contentSize.height)
-        println("----")
     }
     
-    func buildTree (elevation : CGFloat, _ count : Int = 1) {
+    func buildTree (elevation : CGFloat, var _ isBranchAllowed : Bool = false, _ count : Int = 1) {
         
         // build tree recursively
         if elevation < screenDimensions.size.height {
-            let tree = CCBReader.load("TreePiece")
+            var branchFileName : String = ""
+            var randInt : Int = Int(arc4random_uniform(100))
+            
+            // prepare branch to add to tree piece
+            if isBranchAllowed && randInt < 90 {
+                isBranchAllowed = false
+                
+                // left branch selected
+                if randInt < 45 {
+                    branchFileName = "LeftBranch"
+                }
+                    
+                // right branch selected
+                else {
+                    branchFileName = "RightBranch"
+                }
+            }
+                
+            // no branch to add to tree piece
+            else {
+                isBranchAllowed = true
+                branchFileName = "NoBranch"
+            }
+            
+            // add tree piece
+            let tree = CCBReader.load(branchFileName)
             _base.addChild(tree)
             tree.position = CGPoint(x: _base.contentSize.width / 2.0, y: elevation)
             
-            // possibly add a branch to the tree
-            if _isBranchAllowed {
-                let randInt : Int = Int(arc4random_uniform(100))
-                
-                // left branch
-                if randInt < 45 {
-                    println(String(count) + ": BBB")
-                    _isBranchAllowed = false
-                }
-                    
-                // right branch
-                else if randInt < 90 {
-                    println(String(count) + ":     BBB")
-                    _isBranchAllowed = false
-                }
-                    
-                // no branch
-                else {
-                    println(String(count))
-                    _isBranchAllowed = true
-                }
-            }
-                
-            // allow the next tree piece to possibly add a branch
-            else {
-                println(String(count))
-                _isBranchAllowed = true
-            }
-            buildTree(elevation + tree.contentSize.height, count + 1)
+            //recursion
+            buildTree(elevation + tree.contentSize.height, isBranchAllowed, count + 1)
         }
     }
     
