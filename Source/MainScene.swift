@@ -8,40 +8,36 @@ class MainScene : CCNode {
     var _timerBar : CCSprite!
     var _view : CCGLView!
     
-    var _doesBranchExist : Bool = false
+    // initial states
+    var _isBranchAllowed : Bool = false
     var _isBranchLeft : Bool = false
     var _isCharacterLeft : Bool = true
     var _score : NSInteger = 0
     var _timer : Float = 5.0
-    var screenDimensions : CGRect = UIScreen.mainScreen().bounds
-    var screenHeight : CGFloat = UIScreen.mainScreen().bounds.size.height
-    var screenWidth : CGFloat = UIScreen.mainScreen().bounds.size.width
     
-    var widthMidpoint : CGFloat = 0.5
+    // magic numbers
     var timerBonus : Float = 0.25
     var timerStart : Float = 5.0
     var timerMax : Float = 10.0
     
+    // measurements
+    var screenDimensions : CGRect = UIScreen.mainScreen().bounds
+    var screenHeight : CGFloat = UIScreen.mainScreen().bounds.size.height
+    var screenWidth : CGFloat = UIScreen.mainScreen().bounds.size.width
+    var widthMidpoint : CGFloat = 0.5
+    
     func didLoadFromCCB () {
         _base.position = CGPoint(x : widthMidpoint, y : 0.0)
-        buildTree(_base.contentSize.height)
-        resetEnvironment()
+        prepareNewGame()
     }
     
-    func buildTree (elevation : CGFloat) {
-        if elevation < screenDimensions.size.height {
-            let tree = CCBReader.load("TreePiece")
-            _base.addChild(tree)
-            tree.position = CGPoint(x: _base.contentSize.width / 2.0, y: elevation)
-            buildTree(elevation + tree.contentSize.height)
-        }
-    }
-    
-    // prepare new game
-    func resetEnvironment () {
+    // set starting conditions
+    func prepareNewGame () {
+        _isBranchAllowed = false
+        _isBranchLeft = false
+        _isCharacterLeft = true
         _character.position.x = 0.0
         _character.flipX = false
-        _isCharacterLeft = true
         _restartButton.visible = false
         _score = 0
         _scoreLabel.position.x = widthMidpoint
@@ -49,7 +45,48 @@ class MainScene : CCNode {
         _timerBar.position.x = widthMidpoint
         _timerBar.scaleX = timerStart / timerMax
         self.userInteractionEnabled = true
-        // add branches to the tree; no branch at lowest tree piece ???
+        buildTree(_base.contentSize.height)
+        println("----")
+    }
+    
+    func buildTree (elevation : CGFloat, _ count : Int = 1) {
+        
+        // build tree recursively
+        if elevation < screenDimensions.size.height {
+            let tree = CCBReader.load("TreePiece")
+            _base.addChild(tree)
+            tree.position = CGPoint(x: _base.contentSize.width / 2.0, y: elevation)
+            
+            // possibly add a branch to the tree
+            if _isBranchAllowed {
+                let randInt : Int = Int(arc4random_uniform(100))
+                
+                // left branch
+                if randInt < 45 {
+                    println(String(count) + ": BBB")
+                    _isBranchAllowed = false
+                }
+                    
+                // right branch
+                else if randInt < 90 {
+                    println(String(count) + ":     BBB")
+                    _isBranchAllowed = false
+                }
+                    
+                // no branch
+                else {
+                    println(String(count))
+                    _isBranchAllowed = true
+                }
+            }
+                
+            // allow the next tree piece to possibly add a branch
+            else {
+                println(String(count))
+                _isBranchAllowed = true
+            }
+            buildTree(elevation + tree.contentSize.height, count + 1)
+        }
     }
     
     // automatic
