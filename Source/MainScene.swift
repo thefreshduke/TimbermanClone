@@ -97,7 +97,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         // no branch to add to tree piece
         else {
             _isBranchAllowed = true
-            return "NoBranch"
+            return "TreePiece"
         }
     }
     
@@ -131,47 +131,39 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     override func touchBegan (touch : CCTouch!, withEvent event : CCTouchEvent!) {
         let tapX : CGFloat = touch.locationInView(self._view).x / screenWidth
         updatePlayer(tapX)
-        updateTree()
         
         // only update stats if the move was successful
         if (!_isGameOver) {
+            updateTree()
             updateStats()
         }
     }
     
-    // move character and flip image
-    func updatePlayer (tapX : CGFloat) {
-        
-        // left tap
-        if tapX < widthMidpoint {
-            _character.position.x = 0.0
-            _character.flipX = false
-        }
-            
-        // right tap
-        else {
-            _character.position.x = (screenWidth - _character.contentSize.width) / screenWidth
-            _character.flipX = true
-        }
-    }
-    
-    // increase score and timer
-    func updateStats () {
-        _score++
-        _timer = _timer + timerBonus > timerMax ? timerMax : _timer + timerBonus
-    }
-    
-    // propogate tree
+    // move agents
     func updateTree () {
         var count : Int = 0
         var treeHeight : CGFloat = 0
+        var isCharacterLeft : Bool = false
+        var isBranchLeft : Bool = false
+        
+        if (_character.position.x < widthMidpoint) {
+            isCharacterLeft = true
+        }
         
         // move branches down
         for child in _physicsNode.children {
             
             // ignore character
-            if count > 0 {
+            if (count > 0) {
                 var treePiece : CCNode = child as! CCNode
+                
+                // check for switch into death
+//                if (count == 1) {
+//                    if ((treePiece.child.position.x < widthMidpoint) && (isCharacterLeft)) {
+//                        endGame()
+//                    }
+//                }
+                
                 treeHeight = treePiece.position.y
                 treePiece.position.y -= treePiece.contentSize.height
                 
@@ -186,6 +178,28 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         // add new tree piece at the top
         var branchFileName : String = selectTreePieceToAdd(randInt : Int(arc4random_uniform(100)))
         addTreePieceAndIncreaseElevation(branchFileName, treeHeight)
+    }
+    
+    // move character and flip image
+    func updatePlayer (tapX : CGFloat) {
+        
+        // left tap
+        if tapX < widthMidpoint {
+            _character.position.x = 0.0
+            _character.flipX = false
+        }
+            
+            // right tap
+        else {
+            _character.position.x = (screenWidth - _character.contentSize.width) / screenWidth
+            _character.flipX = true
+        }
+    }
+    
+    // increase score and timer
+    func updateStats () {
+        _score++
+        _timer = _timer + timerBonus > timerMax ? timerMax : _timer + timerBonus
     }
     
     // detect collisions between the character and a branch

@@ -1,5 +1,5 @@
 //
-//  LeftBranch.swift
+//  RightBranch.swift
 //  TimberClone
 //
 //  Created by Scotty Shaw on 5/27/15.
@@ -8,10 +8,10 @@
 
 import Foundation
 
-class LeftBranch : TreePiece {
+class RightBranch : TreePiece {
     
     override func didLoadFromCCB() {
         _doesBranchExist = true
-        _isBranchLeft = true
+        _isBranchLeft = false
     }
 }
