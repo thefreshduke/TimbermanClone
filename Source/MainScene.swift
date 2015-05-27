@@ -1,8 +1,14 @@
 import Foundation
 
-class MainScene : CCNode {
+class MainScene : CCNode, CCPhysicsCollisionDelegate {
+    
+    // game agents
     var _base : CCSprite!
     var _character : CCSprite!
+    var _physicsNode : CCPhysicsNode!
+    var _tree : CCPhysicsNode!
+    
+    // UI/UX
     var _restartButton : CCButton!
     var _scoreLabel : CCLabelTTF!
     var _timerBar : CCSprite!
@@ -28,7 +34,7 @@ class MainScene : CCNode {
     var widthMidpoint : CGFloat = 0.5
     
     func didLoadFromCCB () {
-        _base.position = CGPoint(x : widthMidpoint, y : 0.0)
+        _physicsNode.collisionDelegate = self
         prepareNewGame()
     }
     
@@ -36,7 +42,7 @@ class MainScene : CCNode {
     func prepareNewGame () {
         
         // clean old tree
-        _base.removeAllChildren()
+        _tree.removeAllChildren()
         
         // set initial values
         _isBranchAllowed = false
@@ -95,10 +101,10 @@ class MainScene : CCNode {
     }
     
     func addTreePieceAndIncreaseElevation(s : String, _ elevation : CGFloat) -> CGFloat {
-        let tree = CCBReader.load(s)
-        tree.position = CGPoint(x: _base.contentSize.width / 2.0, y: elevation)
-        _base.addChild(tree)
-        return tree.contentSize.height
+        let treePiece = CCBReader.load(s)
+        treePiece.position = CGPoint(x: screenWidth / 2.0, y: elevation)
+        _tree.addChild(treePiece)
+        return treePiece.contentSize.height
     }
     
     // automatic
@@ -125,15 +131,9 @@ class MainScene : CCNode {
         // each tap moves the player
         updatePlayer(touch)
         
-        // check for body shot (switch into death)
-        checkLoseConditions()
-        
-        //only occurs if the player avoided a body shot
+        // only occurs if the player avoided a body shot
         updateStats()
         updateTree()
-        
-        // check for head shot (head on death or switch into head on death)
-        checkLoseConditions()
     }
     
     // move character and flip image
@@ -165,9 +165,9 @@ class MainScene : CCNode {
     func updateTree () {
         var count : Int = 0
         var treeHeight : CGFloat = 0
-        for child in _base.children {
+        for child in _tree.children {
             if count == 0 {
-                _base.removeChild(child as! CCNode)
+                _tree.removeChild(child as! CCNode)
             }
             else {
                 var treePiece : CCNode = child as! CCNode
@@ -180,11 +180,10 @@ class MainScene : CCNode {
         addTreePieceAndIncreaseElevation(branchFileName, treeHeight)
     }
     
-    // verify if the character and a branch has collided
-    func checkLoseConditions () {
-        if _isCharacterLeft && _isBranchLeft {
-            endGame()
-        }
+    // detect collisions between the character and a branch
+    func ccPhysicsCollisionBegin(pair: CCPhysicsCollisionPair!, character: CCNode!, branch: CCNode!) -> ObjCBool {
+        endGame()
+        return true
     }
     
     // freeze environment

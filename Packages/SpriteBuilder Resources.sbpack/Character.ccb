@@ -60,7 +60,7 @@
 			<key>collisionMask</key>
 			<array/>
 			<key>collisionType</key>
-			<string>branch</string>
+			<string>character</string>
 			<key>cornerRadius</key>
 			<real>0.0</real>
 			<key>density</key>
@@ -79,14 +79,14 @@
 				</array>
 				<array>
 					<real>0.0</real>
-					<real>80</real>
+					<real>128</real>
 				</array>
 				<array>
-					<real>112</real>
-					<real>80</real>
+					<real>98</real>
+					<real>128</real>
 				</array>
 				<array>
-					<real>112</real>
+					<real>98</real>
 					<real>0.0</real>
 				</array>
 			</array>
@@ -94,16 +94,16 @@
 			<array>
 				<array>
 					<array>
-						<real>112</real>
+						<real>98</real>
 						<real>0.0</real>
 					</array>
 					<array>
-						<real>112</real>
-						<real>80</real>
+						<real>98</real>
+						<real>128</real>
 					</array>
 					<array>
 						<real>0.0</real>
-						<real>80</real>
+						<real>128</real>
 					</array>
 					<array>
 						<real>0.0</real>
@@ -143,7 +143,7 @@
 				<string>Point</string>
 				<key>value</key>
 				<array>
-					<real>0.5</real>
+					<real>0.0</real>
 					<real>0.0</real>
 				</array>
 			</dict>
@@ -168,7 +168,7 @@
 				<key>value</key>
 				<array>
 					<string></string>
-					<string>TimbermanCloneResources/body.png</string>
+					<string>TimbermanCloneResources/character.png</string>
 				</array>
 			</dict>
 			<dict>
