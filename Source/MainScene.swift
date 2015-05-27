@@ -5,9 +5,9 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     // game agents
     var _base : CCSprite!
     var _character : CCSprite!
-    var _fake : CCSprite!
+    var _leftBranch : CCSprite!
+    var _rightBranch : CCSprite!
     var _physicsNode : CCPhysicsNode!
-    var _tree : CCPhysicsNode!
     
     // UI/UX
     var _restartButton : CCButton!
@@ -43,7 +43,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     func prepareNewGame () {
         
         // clean old tree
-        _tree.removeAllChildren()
+        _physicsNode.removeAllChildren()
         
         // set initial values
         _isBranchAllowed = false
@@ -58,6 +58,9 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         _timerBar.position.x = widthMidpoint
         _timerBar.scaleX = timerStart / timerMax
         self.userInteractionEnabled = true
+        
+        // add new character first
+        _physicsNode.addChild(_character)
         
         // build new tree
         buildTree(_base.contentSize.height)
@@ -77,9 +80,10 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         }
     }
     
+    // prepare tree piece
     func selectTreePieceToAdd(randInt i : Int) -> String {
         
-        // prepare branch to add to tree piece
+        // select branch to add to tree piece
         if _isBranchAllowed && i < 90 {
             _isBranchAllowed = false
             
@@ -101,10 +105,11 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         }
     }
     
+    // create tree piece
     func addTreePieceAndIncreaseElevation(s : String, _ elevation : CGFloat) -> CGFloat {
         let treePiece = CCBReader.load(s)
         treePiece.position = CGPoint(x: screenWidth / 2.0, y: elevation)
-        _tree.addChild(treePiece)
+        _physicsNode.addChild(treePiece)
         return treePiece.contentSize.height
     }
     
@@ -150,10 +155,9 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
             
         // right tap
         else {
-            _character.position.x += 10 / screenWidth
-//            _character.position.x = (screenWidth - _character.contentSize.width) / screenWidth
-//            _character.flipX = true
-//            _isCharacterLeft = false
+            _character.position.x = (screenWidth - _character.contentSize.width) / screenWidth
+            _character.flipX = true
+            _isCharacterLeft = false
         }
     }
     
@@ -163,21 +167,29 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         _timer = _timer + timerBonus > timerMax ? timerMax : _timer + timerBonus
     }
     
-    // move branches down
+    // propogate tree
     func updateTree () {
         var count : Int = 0
         var treeHeight : CGFloat = 0
-        for child in _tree.children {
-            if count == 0 {
-                _tree.removeChild(child as! CCNode)
-            }
-            else {
+        
+        // move branches down
+        for child in _physicsNode.children {
+            
+            // ignore character
+            if count > 0 {
                 var treePiece : CCNode = child as! CCNode
                 treeHeight = treePiece.position.y
                 treePiece.position.y -= treePiece.contentSize.height
+                
+                // remove bottom tree piece
+                if treePiece.position.y <= 0.0 {
+                    _physicsNode.removeChild(treePiece)
+                }
             }
             count++
         }
+        
+        // add new tree piece at the top
         var branchFileName : String = selectTreePieceToAdd(randInt : Int(arc4random_uniform(100)))
         addTreePieceAndIncreaseElevation(branchFileName, treeHeight)
     }

@@ -44,7 +44,7 @@
 		<key>displayName</key>
 		<string>CCSprite</string>
 		<key>memberVarAssignmentName</key>
-		<string>_fake</string>
+		<string></string>
 		<key>memberVarAssignmentType</key>
 		<integer>1</integer>
 		<key>physicsBody</key>
@@ -60,7 +60,7 @@
 			<key>collisionMask</key>
 			<array/>
 			<key>collisionType</key>
-			<string>fake</string>
+			<string>branch</string>
 			<key>cornerRadius</key>
 			<real>0.0</real>
 			<key>density</key>
@@ -79,14 +79,14 @@
 				</array>
 				<array>
 					<real>0.0</real>
-					<real>24</real>
+					<real>57</real>
 				</array>
 				<array>
-					<real>136</real>
-					<real>24</real>
+					<real>118</real>
+					<real>57</real>
 				</array>
 				<array>
-					<real>136</real>
+					<real>118</real>
 					<real>0.0</real>
 				</array>
 			</array>
@@ -94,16 +94,16 @@
 			<array>
 				<array>
 					<array>
-						<real>136</real>
+						<real>118</real>
 						<real>0.0</real>
 					</array>
 					<array>
-						<real>136</real>
-						<real>24</real>
+						<real>118</real>
+						<real>57</real>
 					</array>
 					<array>
 						<real>0.0</real>
-						<real>24</real>
+						<real>57</real>
 					</array>
 					<array>
 						<real>0.0</real>
@@ -120,7 +120,7 @@
 				<key>type</key>
 				<string>StringSimple</string>
 				<key>value</key>
-				<string>_fake</string>
+				<string></string>
 			</dict>
 			<dict>
 				<key>name</key>
@@ -143,7 +143,7 @@
 				<string>Point</string>
 				<key>value</key>
 				<array>
-					<real>0.5</real>
+					<real>1</real>
 					<real>0.5</real>
 				</array>
 			</dict>
@@ -168,7 +168,7 @@
 				<key>value</key>
 				<array>
 					<string></string>
-					<string>TimbermanCloneResources/life.png</string>
+					<string>TimbermanCloneResources/branch.png</string>
 				</array>
 			</dict>
 			<dict>
@@ -193,6 +193,17 @@
 					<real>1</real>
 					<real>1</real>
 					<real>1</real>
+				</array>
+			</dict>
+			<dict>
+				<key>name</key>
+				<string>flip</string>
+				<key>type</key>
+				<string>Flip</string>
+				<key>value</key>
+				<array>
+					<true/>
+					<false/>
 				</array>
 			</dict>
 			<dict>
