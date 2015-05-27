@@ -5,8 +5,6 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     // game agents
     var _base : CCSprite!
     var _character : CCSprite!
-    var _leftBranch : CCSprite!
-    var _rightBranch : CCSprite!
     var _physicsNode : CCPhysicsNode!
     
     // UI/UX
