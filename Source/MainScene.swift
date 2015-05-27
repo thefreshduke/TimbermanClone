@@ -5,6 +5,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     // game agents
     var _base : CCSprite!
     var _character : CCSprite!
+    var _fake : CCSprite!
     var _physicsNode : CCPhysicsNode!
     var _tree : CCPhysicsNode!
     
@@ -149,9 +150,10 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
             
         // right tap
         else {
-            _character.position.x = (screenWidth - _character.contentSize.width) / screenWidth
-            _character.flipX = true
-            _isCharacterLeft = false
+            _character.position.x += 10 / screenWidth
+//            _character.position.x = (screenWidth - _character.contentSize.width) / screenWidth
+//            _character.flipX = true
+//            _isCharacterLeft = false
         }
     }
     
@@ -181,7 +183,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     }
     
     // detect collisions between the character and a branch
-    func ccPhysicsCollisionBegin(pair: CCPhysicsCollisionPair!, character: CCNode!, branch: CCNode!) -> ObjCBool {
+    func ccPhysicsCollisionBegin (pair: CCPhysicsCollisionPair!, character: CCNode!, fake: CCNode!) -> ObjCBool {
         endGame()
         return true
     }

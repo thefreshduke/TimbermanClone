@@ -10,7 +10,8 @@ import Foundation
 
 class LeftBranch : CCNode
 {
-    var _branch: CCNode!
+    var _branch : CCNode!
+    var _name : String = "left"
     
     func didLoadFromCCB() {
         _branch.physicsBody.sensor = true
