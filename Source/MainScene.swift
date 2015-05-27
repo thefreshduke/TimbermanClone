@@ -15,6 +15,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     
     // initial state variables
     var _isBranchAllowed : Bool = false
+    var _isGameOver : Bool = false
     var _score : NSInteger = 0
     var _timer : Float = 5.0
     
@@ -43,6 +44,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         
         // set initial values
         _isBranchAllowed = false
+        _isGameOver = false
         _character.position.x = 0.0
         _character.flipX = false
         _restartButton.visible = false
@@ -131,9 +133,11 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         // each tap moves the player
         updatePlayer(touch)
         
-        // only occurs if the player avoided a body shot
-        updateStats()
-        updateTree()
+        // only occurs if the player is alive
+        if (!_isGameOver) {
+            updateStats()
+            updateTree()
+        }
     }
     
     // move character and flip image
@@ -188,6 +192,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     
     // detect collisions between the character and a branch
     func ccPhysicsCollisionBegin (pair: CCPhysicsCollisionPair!, character: CCNode!, branch: CCNode!) -> ObjCBool {
+        _isGameOver = true
         endGame()
         return true
     }
