@@ -85,7 +85,7 @@
 				<key>customClass</key>
 				<string></string>
 				<key>displayName</key>
-				<string>_branch</string>
+				<string>CCSprite</string>
 				<key>memberVarAssignmentName</key>
 				<string></string>
 				<key>memberVarAssignmentType</key>
@@ -163,7 +163,7 @@
 						<key>type</key>
 						<string>StringSimple</string>
 						<key>value</key>
-						<string>_branch</string>
+						<string>CCSprite</string>
 					</dict>
 					<dict>
 						<key>name</key>
@@ -173,7 +173,7 @@
 						<key>value</key>
 						<array>
 							<real>0.0</real>
-							<real>0.5</real>
+							<real>0.69999998807907104</real>
 							<integer>0</integer>
 							<integer>2</integer>
 							<integer>2</integer>
@@ -258,6 +258,8 @@
 						<array/>
 					</dict>
 				</array>
+				<key>selected</key>
+				<true/>
 			</dict>
 		</array>
 		<key>customClass</key>
@@ -443,8 +445,6 @@
 				<array/>
 			</dict>
 		</array>
-		<key>selected</key>
-		<true/>
 	</dict>
 	<key>notes</key>
 	<array/>

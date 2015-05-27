@@ -45,7 +45,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         _isBranchAllowed = false
         _character.position.x = 0.0
         _character.flipX = false
-        _restartButton.visible = true
+        _restartButton.visible = false
         _score = scoreStart
         _scoreLabel.position.x = widthMidpoint
         _timer = timerStart
