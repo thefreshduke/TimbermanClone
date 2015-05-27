@@ -54,12 +54,15 @@ class MainScene : CCNode {
         buildTree(_base.contentSize.height)
     }
     
-    func buildTree (elevation : CGFloat, var _ isBranchAllowed : Bool = false, _ count : Int = 1) {
+    func buildTree (var elevation : CGFloat, var _ isBranchAllowed : Bool = false, _ count : Int = 1) {
         
         // build tree recursively
         if elevation < screenDimensions.size.height {
             var branchFileName : String = ""
             var randInt : Int = Int(arc4random_uniform(100))
+            
+//            branchFileName = selectTreePieceToAdd(isBranchAllowed, randInt : Int(arc4random_uniform(100)))
+//            isBranchAllowed = selectTreePieceToAdd(isBranchAllowed, branchFileName: branchFileName, randInt : Int(arc4random_uniform(100)))
             
             // prepare branch to add to tree piece
             if isBranchAllowed && randInt < 90 {
@@ -82,14 +85,43 @@ class MainScene : CCNode {
                 branchFileName = "NoBranch"
             }
             
-            // add tree piece
-            let tree = CCBReader.load(branchFileName)
-            _base.addChild(tree)
-            tree.position = CGPoint(x: _base.contentSize.width / 2.0, y: elevation)
+            elevation += addTreePieceAndIncreaseElevation(branchFileName, elevation)
             
-            //recursion
-            buildTree(elevation + tree.contentSize.height, isBranchAllowed, count + 1)
+            // call for recursion
+            buildTree(elevation, isBranchAllowed, count + 1)
         }
+    }
+    
+    func selectTreePieceToAdd(isBranchAllowed : Bool, var branchFileName : String, randInt i : Int) -> Bool {
+        // prepare branch to add to tree piece
+        if isBranchAllowed && i < 90 {
+//            isBranchAllowed = false
+            
+            // left branch selected
+            if i < 45 {
+                branchFileName = "LeftBranch"
+            }
+                
+                // right branch selected
+            else {
+                branchFileName = "RightBranch"
+            }
+            return false
+        }
+            
+            // no branch to add to tree piece
+        else {
+//            isBranchAllowed = true
+            branchFileName = "NoBranch"
+            return true
+        }
+    }
+    
+    func addTreePieceAndIncreaseElevation(s : String, _ elevation : CGFloat) -> CGFloat {
+        let tree = CCBReader.load(s)
+        tree.position = CGPoint(x: _base.contentSize.width / 2.0, y: elevation)
+        _base.addChild(tree)
+        return tree.contentSize.height
     }
     
     // automatic
@@ -99,12 +131,13 @@ class MainScene : CCNode {
         if _score > 0 {
             _timer -= Float(delta)
             
-            // time ran out
+            // time has run out
             if _timer <= 0.0 {
                 endGame()
             }
         }
         
+        // synchronize visual components with stats
         _timerBar.scaleX = Float(_timer / timerMax)
         _scoreLabel.string = String(_score)
     }
@@ -120,13 +153,13 @@ class MainScene : CCNode {
         
         //only occurs if the player avoided a body shot
         updateStats()
-        updateTree ()
-        
+        updateTree()
+        println("----")
         // check for head shot (head on death or switch into head on death)
         checkLoseConditions()
     }
     
-    // move and flip character
+    // move character and flip image
     func updatePlayer (touch : CCTouch!) {
         let tapPoint : CGFloat = touch.locationInView(self._view).x / screenWidth
         
@@ -147,16 +180,28 @@ class MainScene : CCNode {
     
     // increase score and timer
     func updateStats () {
-        _score += 1
+        _score++
         _timer = _timer + timerBonus > timerMax ? timerMax : _timer + timerBonus
     }
     
     // move branches down
     func updateTree () {
-        // move branches down
+        var count : Int = 0
+        for child in _base.children {
+            if count == 0 {
+                _base.removeChild(child as! CCNode)
+            }
+            else {
+                var treePiece : CCNode = child as! CCNode
+                treePiece.position.y -= treePiece.contentSize.height
+            }
+            count++
+        }
+//        addTreePieceAndIncreaseElevation(s: String, <#elevation: CGFloat#>)
+        println(count)
     }
     
-    // verify if the character and a branch collided
+    // verify if the character and a branch has collided
     func checkLoseConditions () {
         if _isCharacterLeft && _isBranchLeft {
             endGame()
