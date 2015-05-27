@@ -129,23 +129,21 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     
     // process user input
     override func touchBegan (touch : CCTouch!, withEvent event : CCTouchEvent!) {
+        let tapX : CGFloat = touch.locationInView(self._view).x / screenWidth
+        updatePlayer(tapX)
+        updateTree()
         
-        // each tap moves the player
-        updatePlayer(touch)
-        
-        // only occurs if the player is alive
+        // only update stats if the move was successful
         if (!_isGameOver) {
             updateStats()
-            updateTree()
         }
     }
     
     // move character and flip image
-    func updatePlayer (touch : CCTouch!) {
-        let tapPoint : CGFloat = touch.locationInView(self._view).x / screenWidth
+    func updatePlayer (tapX : CGFloat) {
         
         // left tap
-        if tapPoint < widthMidpoint {
+        if tapX < widthMidpoint {
             _character.position.x = 0.0
             _character.flipX = false
         }
@@ -193,6 +191,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     // detect collisions between the character and a branch
     func ccPhysicsCollisionBegin (pair: CCPhysicsCollisionPair!, character: CCNode!, branch: CCNode!) -> ObjCBool {
         _isGameOver = true
+        _score--
         endGame()
         return true
     }
