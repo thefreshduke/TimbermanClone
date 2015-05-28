@@ -5,7 +5,9 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     // game agents
     var _base : CCSprite!
     var _character : CCSprite!
+    var _leftImage : CCSprite!
     var _physicsNode : CCPhysicsNode!
+    var _rightImage : CCSprite!
     
     // UI/UX
     var _restartButton : CCButton!
@@ -16,7 +18,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     // initial state variables
     var _isBranchAllowed : Bool = false
     var _isCharacterLeft : Bool = true
-    var isGameOver : Bool = false
+    var _isGameOver : Bool = false
     var _score : NSInteger = 0
     var _timer : Float = 5.0
     
@@ -50,9 +52,11 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         // set initial values
         _isBranchAllowed = false
         _isCharacterLeft = true
-        isGameOver = false
+        _isGameOver = false
         _character.position.x = 0.0
         _character.flipX = false
+        _leftImage.visible = false
+        _rightImage.visible = false
         _restartButton.visible = false
         _score = scoreStart
         _scoreLabel.position.x = widthMidpoint
@@ -140,7 +144,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         updatePlayer(tapX)
         
         // only occurs if the move was successful
-        if (!isGameOver) {
+        if (!_isGameOver) {
             updateTree()
             updateStats()
         }
@@ -156,7 +160,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
             _isCharacterLeft = true
         }
             
-            // right tap
+        // right tap
         else {
             _character.position.x = (screenWidth - _character.contentSize.width) / screenWidth
             _character.flipX = true
@@ -180,7 +184,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         
         let continueGame : Bool = checkSwitchIntoDeath()
         
-        // occurs only if character did not die from switching into a branch
+        // occurs only if character did not switch into a branch
         if (continueGame) {
             
             // move branches down
@@ -234,7 +238,18 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     
     // freeze environment
     func endGame () {
-        isGameOver = true
+        
+        // lay left image of the character over the branches
+        if (_character.position.x < widthMidpoint) {
+            _leftImage.visible = true
+        }
+            
+        // lay right image of the character over the branches
+        else {
+            _rightImage.visible = true
+        }
+        
+        _isGameOver = true
         _timer = 0.0
         self.userInteractionEnabled = false
         _restartButton.visible = true
