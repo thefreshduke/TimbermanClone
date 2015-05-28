@@ -1188,9 +1188,9 @@
 						<string>Position</string>
 						<key>value</key>
 						<array>
+							<real>1</real>
 							<real>0.0</real>
-							<real>0.0</real>
-							<integer>3</integer>
+							<integer>0</integer>
 							<integer>2</integer>
 							<integer>2</integer>
 						</array>

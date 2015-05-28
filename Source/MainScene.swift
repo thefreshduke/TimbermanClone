@@ -45,7 +45,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     // set starting conditions
     func prepareNewGame () {
         
-        // clean old tree
+        // clean old array and tree
         branchesLocationArray = []
         _physicsNode.removeAllChildren()
         
@@ -53,10 +53,13 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         _isBranchAllowed = false
         _isCharacterLeft = true
         _isGameOver = false
-        _character.position.x = 0.0
+        _character.anchorPoint.x = 1.0
+        _character.position.x = _base.position.x - ((_base.contentSize.width / 2.0) / screenWidth)
         _character.flipX = false
         _leftImage.visible = false
+        _leftImage.position.x = _base.position.x - ((_base.contentSize.width / 2.0) / screenWidth)
         _rightImage.visible = false
+        _rightImage.position.x = _base.position.x + ((_base.contentSize.width / 2.0) / screenWidth)
         _restartButton.visible = false
         _score = scoreStart
         _scoreLabel.position.x = widthMidpoint
@@ -155,14 +158,16 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         
         // left tap
         if (tapX < widthMidpoint) {
-            _character.position.x = 0.0
+            _character.position.x = _base.position.x - ((_base.contentSize.width / 2.0) / screenWidth)
+            _character.anchorPoint.x = 1.0
             _character.flipX = false
             _isCharacterLeft = true
         }
             
         // right tap
         else {
-            _character.position.x = (screenWidth - _character.contentSize.width) / screenWidth
+            _character.position.x = _base.position.x + ((_base.contentSize.width / 2.0) / screenWidth)
+            _character.anchorPoint.x = 0.0
             _character.flipX = true
             _isCharacterLeft = false
         }
