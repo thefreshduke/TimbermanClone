@@ -72,7 +72,8 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         buildTree(_base.contentSize.height)
     }
     
-    func buildTree (var elevation : CGFloat, _ count : Int = 1) {
+    // creating a random tree for each game
+    func buildTree (var elevation : CGFloat) {
         
         // build tree recursively
         if (elevation < screenDimensions.size.height) {
@@ -82,7 +83,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
             elevation += addTreePieceAndIncreaseElevation(branchFileName, elevation)
             
             // call for recursion
-            buildTree(elevation, count + 1)
+            buildTree(elevation)
         }
     }
     
@@ -143,10 +144,9 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         let tapX : CGFloat = touch.locationInView(self._view).x / screenWidth
         updatePlayer(tapX)
         
-        // only occurs if the move was successful
+        // only occurs if the game is not over
         if (!_isGameOver) {
-            updateTree()
-            updateStats()
+            processMove()
         }
     }
     
@@ -168,6 +168,23 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         }
     }
     
+    // game rules
+    func processMove () {
+        let didNotSwitchIntoBranch : Bool = checkSwitchIntoDeath()
+        
+        // occurs only if character did not switch into a branch
+        if (didNotSwitchIntoBranch) {
+            updateTree()
+        }
+        
+        let moveSuccessful : Bool = checkSwitchIntoDeath()
+        
+        // occurs only if the move was fully successful
+        if (moveSuccessful) {
+            updateStats()
+        }
+    }
+    
     // check for an unsuccessful move
     func checkSwitchIntoDeath () -> Bool {
         if ((_isCharacterLeft && branchesLocationArray[0] == "L") || (!_isCharacterLeft && branchesLocationArray[0] == "R")) {
@@ -177,40 +194,34 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         return true
     }
     
-    // move agents
+    // generate infinite tree for game continuation
     func updateTree () {
         var count : Int = -1
         var treeHeight : CGFloat = 0
         
-        let continueGame : Bool = checkSwitchIntoDeath()
-        
-        // occurs only if character did not switch into a branch
-        if (continueGame) {
+        // move branches down
+        for child in _physicsNode.children {
             
-            // move branches down
-            for child in _physicsNode.children {
+            // ignore character
+            if (count >= 0) {
+                var treePiece : CCNode = child as! CCNode
                 
-                // ignore character
-                if (count >= 0) {
-                    var treePiece : CCNode = child as! CCNode
-                    
-                    treeHeight = treePiece.position.y
-                    treePiece.position.y -= treePiece.contentSize.height
-                    
-                    // remove bottom tree piece
-                    if (treePiece.position.y <= 0.0) {
-                        _physicsNode.removeChild(treePiece)
-                    }
+                treeHeight = treePiece.position.y
+                treePiece.position.y -= treePiece.contentSize.height
+                
+                // remove bottom tree piece
+                if (treePiece.position.y <= 0.0) {
+                    _physicsNode.removeChild(treePiece)
                 }
-                count++
             }
-            
-            updateBranchesLocationArray()
-            
-            // add new tree piece at the top
-            var branchFileName : String = selectTreePieceToAdd(randInt : Int(arc4random_uniform(100)))
-            addTreePieceAndIncreaseElevation(branchFileName, treeHeight)
+            count++
         }
+        
+        updateBranchesLocationArray()
+        
+        // add new tree piece at the top
+        var branchFileName : String = selectTreePieceToAdd(randInt : Int(arc4random_uniform(100)))
+        addTreePieceAndIncreaseElevation(branchFileName, treeHeight)
     }
     
     // update information on branch locations
@@ -231,7 +242,6 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     
     // detect collisions between the character and a branch
     func ccPhysicsCollisionBegin (pair: CCPhysicsCollisionPair!, character: CCNode!, branch: CCNode!) -> ObjCBool {
-        _score--
         endGame()
         return true
     }
@@ -249,8 +259,8 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
             _rightImage.visible = true
         }
         
-        _isGameOver = true
         _timer = 0.0
+        _isGameOver = true
         self.userInteractionEnabled = false
         _restartButton.visible = true
     }
