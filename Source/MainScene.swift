@@ -15,6 +15,8 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     
     // initial state variables
     var _isBranchAllowed : Bool = false
+    var _isBranchLeft : Bool = false
+    var _isCharacterLeft : Bool = true
     var _isGameOver : Bool = false
     var _score : NSInteger = 0
     var _timer : Float = 5.0
@@ -44,6 +46,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         
         // set initial values
         _isBranchAllowed = false
+        _isCharacterLeft = true
         _isGameOver = false
         _character.position.x = 0.0
         _character.flipX = false
@@ -122,7 +125,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
             }
         }
         
-        // synchronize visual components with stats
+        // synchronize display with environment
         _timerBar.scaleX = Float(_timer / timerMax)
         _scoreLabel.string = String(_score)
     }
@@ -164,6 +167,11 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
 //                    }
 //                }
                 
+                if (_isCharacterLeft && _isBranchLeft) {
+                    endGame()
+                    return
+                }
+                
                 treeHeight = treePiece.position.y
                 treePiece.position.y -= treePiece.contentSize.height
                 
@@ -187,12 +195,14 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         if tapX < widthMidpoint {
             _character.position.x = 0.0
             _character.flipX = false
+            _isCharacterLeft = true
         }
             
-            // right tap
+        // right tap
         else {
             _character.position.x = (screenWidth - _character.contentSize.width) / screenWidth
             _character.flipX = true
+            _isCharacterLeft = false
         }
     }
     
@@ -204,7 +214,6 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     
     // detect collisions between the character and a branch
     func ccPhysicsCollisionBegin (pair: CCPhysicsCollisionPair!, character: CCNode!, branch: CCNode!) -> ObjCBool {
-        _isGameOver = true
         _score--
         endGame()
         return true
@@ -212,6 +221,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     
     // freeze environment
     func endGame () {
+        _isGameOver = true
         _timer = 0.0
         self.userInteractionEnabled = false
         _restartButton.visible = true
