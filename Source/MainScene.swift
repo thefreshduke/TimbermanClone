@@ -15,7 +15,6 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     
     // initial state variables
     var _isBranchAllowed : Bool = false
-    var _isBranchLeft : Bool = false
     var _isCharacterLeft : Bool = true
     var _isGameOver : Bool = false
     var _score : NSInteger = 0
@@ -33,6 +32,9 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     var screenWidth : CGFloat = UIScreen.mainScreen().bounds.size.width
     var widthMidpoint : CGFloat = 0.5
     
+    // storage variables
+    var branchesLocationArray = [Character]()
+    
     func didLoadFromCCB () {
         _physicsNode.collisionDelegate = self
         prepareNewGame()
@@ -42,6 +44,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     func prepareNewGame () {
         
         // clean old tree
+        branchesLocationArray = []
         _physicsNode.removeAllChildren()
         
         // set initial values
@@ -107,6 +110,8 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     // create tree piece
     func addTreePieceAndIncreaseElevation(s : String, _ elevation : CGFloat) -> CGFloat {
         let treePiece = CCBReader.load(s)
+        branchesLocationArray.append(Array(s)[0])
+        println("letter to append: " + s)
         treePiece.position = CGPoint(x: screenWidth / 2.0, y: elevation)
         _physicsNode.addChild(treePiece)
         return treePiece.contentSize.height
@@ -117,7 +122,7 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         
         // the game has started
         if _score > 0 {
-            _timer -= Float(delta)
+//            _timer -= Float(delta)
             
             // time has run out
             if _timer <= 0.0 {
@@ -144,33 +149,24 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     
     // move agents
     func updateTree () {
-        var count : Int = 0
+        var count : Int = -1
         var treeHeight : CGFloat = 0
-        var isCharacterLeft : Bool = false
         var isBranchLeft : Bool = false
-        
-        if (_character.position.x < widthMidpoint) {
-            isCharacterLeft = true
-        }
         
         // move branches down
         for child in _physicsNode.children {
             
             // ignore character
-            if (count > 0) {
+            if (count >= 0) {
                 var treePiece : CCNode = child as! CCNode
                 
-                // check for switch into death
-//                if (count == 1) {
-//                    if ((treePiece.child.position.x < widthMidpoint) && (isCharacterLeft)) {
-//                        endGame()
-//                    }
+//                if (_isCharacterLeft && branchesLocationArray[0] == "L") || (!_isCharacterLeft && branchesLocationArray[count] == "R") {
+//                    print("character left: ")
+//                    print(_isCharacterLeft)
+//                    println("branch location: " + branchesLocationArray[0])
+//                    endGame()
+//                    return
 //                }
-                
-                if (_isCharacterLeft && _isBranchLeft) {
-                    endGame()
-                    return
-                }
                 
                 treeHeight = treePiece.position.y
                 treePiece.position.y -= treePiece.contentSize.height
@@ -182,6 +178,21 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
             }
             count++
         }
+        
+        // update array
+//        for c in branchesLocationArray {
+//            println(c)
+//        }
+//        for index in 0...(branchesLocationArray.count) {
+//            if ((index + 1) < branchesLocationArray.count) {
+//                branchesLocationArray[index] = branchesLocationArray[index + 1]
+//            }
+//        }
+//        println("----")
+//        for c in branchesLocationArray {
+//            println(c)
+//        }
+//        println("====")
         
         // add new tree piece at the top
         var branchFileName : String = selectTreePieceToAdd(randInt : Int(arc4random_uniform(100)))
