@@ -54,12 +54,29 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
         _isCharacterLeft = true
         _isGameOver = false
         _character.anchorPoint.x = 1.0
-        _character.position.x = _base.position.x - ((_base.contentSize.width / 2.0) / screenWidth)
         _character.flipX = false
+        
+        var characterLeftPositionForiPad : CGFloat = _base.position.x - (_base.contentSize.width / screenWidth)
+        var characterRightPositionForiPad : CGFloat = _base.position.x + (_base.contentSize.width / screenWidth)
+        var characterLeftPosition : CGFloat = _base.position.x - ((_base.contentSize.width / 2.0) / screenWidth)
+        var characterRightPosition : CGFloat = _base.position.x + ((_base.contentSize.width / 2.0) / screenWidth)
+        
+        // set character locations for iPads
+        if (UIDevice.currentDevice().userInterfaceIdiom == .Pad) {
+            _character.position.x = characterLeftPositionForiPad
+            _leftImage.position.x = characterLeftPositionForiPad
+            _rightImage.position.x = characterRightPositionForiPad
+        }
+        
+        // set character locations for non-iPads
+        else {
+            _character.position.x = characterLeftPosition
+            _leftImage.position.x = characterLeftPosition
+            _rightImage.position.x = characterRightPosition
+        }
+        
         _leftImage.visible = false
-        _leftImage.position.x = _base.position.x - ((_base.contentSize.width / 2.0) / screenWidth)
         _rightImage.visible = false
-        _rightImage.position.x = _base.position.x + ((_base.contentSize.width / 2.0) / screenWidth)
         _restartButton.visible = false
         _score = scoreStart
         _scoreLabel.position.x = widthMidpoint
@@ -119,7 +136,16 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     func addTreePieceAndIncreaseElevation(s : String, _ elevation : CGFloat) -> CGFloat {
         let treePiece = CCBReader.load(s)
         branchesLocationArray.append(Array(s)[0])
-        treePiece.position = CGPoint(x: screenWidth / 2.0, y: elevation)
+        
+        // set tree locations for iPads
+        if (UIDevice.currentDevice().userInterfaceIdiom == .Pad) {
+            treePiece.position = CGPoint(x: screenWidth / 4.0, y: elevation)
+        }
+            
+        // set tree locations for non-iPads
+        else {
+            treePiece.position = CGPoint(x: screenWidth / 2.0, y: elevation)
+        }
         _physicsNode.addChild(treePiece)
         return treePiece.contentSize.height
     }
@@ -156,9 +182,24 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
     // move character and flip image
     func updatePlayer (tapX : CGFloat) {
         
+        var characterLeftPositionForiPad : CGFloat = _base.position.x - (_base.contentSize.width / screenWidth)
+        var characterRightPositionForiPad : CGFloat = _base.position.x + (_base.contentSize.width / screenWidth)
+        var characterLeftPosition : CGFloat = _base.position.x - ((_base.contentSize.width / 2.0) / screenWidth)
+        var characterRightPosition : CGFloat = _base.position.x + ((_base.contentSize.width / 2.0) / screenWidth)
+        
         // left tap
         if (tapX < widthMidpoint) {
-            _character.position.x = _base.position.x - ((_base.contentSize.width / 2.0) / screenWidth)
+            
+            // set character locations for iPads
+            if (UIDevice.currentDevice().userInterfaceIdiom == .Pad) {
+                _character.position.x = characterLeftPositionForiPad
+            }
+            
+            // set character locations for non-iPads
+            else {
+                _character.position.x = characterLeftPosition
+            }
+            
             _character.anchorPoint.x = 1.0
             _character.flipX = false
             _isCharacterLeft = true
@@ -166,7 +207,17 @@ class MainScene : CCNode, CCPhysicsCollisionDelegate {
             
         // right tap
         else {
-            _character.position.x = _base.position.x + ((_base.contentSize.width / 2.0) / screenWidth)
+            
+            // set character locations for iPads
+            if (UIDevice.currentDevice().userInterfaceIdiom == .Pad) {
+                _character.position.x = characterRightPositionForiPad
+            }
+                
+            // set character locations for non-iPads
+            else {
+                _character.position.x = characterRightPosition
+            }
+            
             _character.anchorPoint.x = 0.0
             _character.flipX = true
             _isCharacterLeft = false
